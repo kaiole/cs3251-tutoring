@@ -1,0 +1,43 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+
+export const prerender = false;
+
+// The token is only echoed into a same-origin POST form; it is never logged or sent elsewhere.
+const tokenHash = Astro.url.searchParams.get('token_hash') ?? '';
+const type = Astro.url.searchParams.get('type') ?? '';
+const valid = /^[A-Za-z0-9_-]{8,200}$/.test(tokenHash) && (type === 'email' || type === 'invite');
+---
+
+<StarlightPage
+  frontmatter={{
+    title: type === 'invite' ? 'Accept your invitation' : 'Finish signing in',
+    pagefind: false,
+    tableOfContents: false,
+    head: [{ tag: 'meta', attrs: { name: 'robots', content: 'noindex' } }],
+  }}
+>
+  <div class="tq-auth">
+    {
+      valid ? (
+        <form method="post" action="/api/auth/confirm">
+          <input type="hidden" name="token_hash" value={tokenHash} />
+          <input type="hidden" name="type" value={type} />
+          <button type="submit" class="tq-button tq-button--primary tq-button--large">
+            Continue signing in
+          </button>
+        </form>
+      ) : (
+        <div class="tq-aside tq-aside--caution" role="alert">
+          <p>
+            <strong>This sign-in link no longer works</strong>
+          </p>
+          <p>It may have expired, already been used, or been copied incompletely.</p>
+          <a class="tq-button tq-button--secondary" href="/login">
+            Send a new link
+          </a>
+        </div>
+      )
+    }
+  </div>
+</StarlightPage>

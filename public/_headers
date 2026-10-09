@@ -1,0 +1,14 @@
+# Baseline security headers for pre-rendered pages and assets (Netlify).
+# On-demand routes (/questions, /api, /auth) get these plus Cache-Control: private, no-store from
+# src/middleware.ts. script-src/style-src come from Astro's per-page CSP <meta>.
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Content-Security-Policy: frame-ancestors 'none'; base-uri 'self'; object-src 'none'; form-action 'self'
+  Referrer-Policy: same-origin
+  Cross-Origin-Opener-Policy: same-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+/login
+  X-Robots-Tag: noindex

@@ -1,0 +1,18 @@
+---
+import Default from '@astrojs/starlight/components/PageSidebar.astro';
+import AskRail from '../questions/AskRail';
+
+const { entry } = Astro.locals.starlightRoute;
+const noteId = entry.id.startsWith('notes/') ? entry.data.noteId : undefined;
+---
+
+<Default />
+{
+  noteId && (
+    <div class="right-sidebar-panel sl-hidden lg:sl-block tq-rail">
+      <div class="sl-container">
+        <AskRail client:idle noteId={noteId} />
+      </div>
+    </div>
+  )
+}

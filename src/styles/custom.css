@@ -1,0 +1,774 @@
+/*
+ * Monochrome theme from the lackluster grays (copied from the tutor's lackluster-red palette,
+ * minus every hue). Question UI is built on Starlight's tokens (--sl-*). States are conveyed by
+ * text labels, weight and borders, never colour. No rounded corners anywhere.
+ */
+:root,
+::backdrop {
+  color-scheme: dark;
+  --sl-color-white: #dddddd;
+  --sl-color-gray-1: #cccccc;
+  --sl-color-gray-2: #aaaaaa;
+  --sl-color-gray-3: #7a7a7a;
+  --sl-color-gray-4: #555555;
+  --sl-color-gray-5: #2a2a2a;
+  --sl-color-gray-6: #191919;
+  --sl-color-black: #000000;
+
+  --sl-color-accent-low: #191919;
+  --sl-color-accent: #7a7a7a;
+  --sl-color-accent-high: #dddddd;
+  --sl-color-text-accent: #dddddd;
+  --sl-color-text-invert: #000000;
+  --sl-color-bg-accent: #dddddd;
+  --sl-color-bg-nav: #080808;
+  --sl-color-bg-sidebar: #080808;
+  --sl-color-bg-inline-code: #191919;
+  --sl-color-hairline: #2a2a2a;
+  --sl-color-hairline-light: #2a2a2a;
+  --sl-color-hairline-shade: #000000;
+  --sl-color-backdrop-overlay: rgb(0 0 0 / 0.7);
+
+  /* Starlight's hued sets (asides, badges) collapse to grays. */
+  --sl-color-orange-low: #191919;
+  --sl-color-orange: #7a7a7a;
+  --sl-color-orange-high: #cccccc;
+  --sl-color-green-low: #191919;
+  --sl-color-green: #7a7a7a;
+  --sl-color-green-high: #cccccc;
+  --sl-color-blue-low: #191919;
+  --sl-color-blue: #7a7a7a;
+  --sl-color-blue-high: #cccccc;
+  --sl-color-purple-low: #191919;
+  --sl-color-purple: #7a7a7a;
+  --sl-color-purple-high: #cccccc;
+  --sl-color-red-low: #191919;
+  --sl-color-red: #7a7a7a;
+  --sl-color-red-high: #cccccc;
+
+  --q-border: var(--sl-color-gray-4);
+  --q-sel: #444444;
+  /* Code surface: palette bg_alt, framed by a gray-5 border so blocks stand off the page. */
+  --tq-code-bg: #080808;
+}
+:root[data-theme='light'],
+[data-theme='light'] ::backdrop {
+  color-scheme: light;
+  --sl-color-white: #080808;
+  --sl-color-gray-1: #191919;
+  --sl-color-gray-2: #2a2a2a;
+  --sl-color-gray-3: #555555;
+  --sl-color-gray-4: #7a7a7a;
+  --sl-color-gray-5: #cccccc;
+  --sl-color-gray-6: #eeeeee;
+  --sl-color-gray-7: #f5f5f5;
+  --sl-color-black: #ffffff;
+
+  --sl-color-accent-low: #eeeeee;
+  --sl-color-accent: #555555;
+  --sl-color-accent-high: #080808;
+  --sl-color-text-accent: #080808;
+  --sl-color-text-invert: #ffffff;
+  --sl-color-bg-accent: #080808;
+  --sl-color-bg-nav: #f5f5f5;
+  --sl-color-bg-sidebar: #ffffff;
+  --sl-color-bg-inline-code: #eeeeee;
+  --sl-color-hairline: #cccccc;
+  --sl-color-hairline-light: #eeeeee;
+  --sl-color-hairline-shade: #eeeeee;
+  --sl-color-backdrop-overlay: rgb(255 255 255 / 0.7);
+
+  --sl-color-orange-low: #eeeeee;
+  --sl-color-orange: #7a7a7a;
+  --sl-color-orange-high: #2a2a2a;
+  --sl-color-green-low: #eeeeee;
+  --sl-color-green: #7a7a7a;
+  --sl-color-green-high: #2a2a2a;
+  --sl-color-blue-low: #eeeeee;
+  --sl-color-blue: #7a7a7a;
+  --sl-color-blue-high: #2a2a2a;
+  --sl-color-purple-low: #eeeeee;
+  --sl-color-purple: #7a7a7a;
+  --sl-color-purple-high: #2a2a2a;
+  --sl-color-red-low: #eeeeee;
+  --sl-color-red: #7a7a7a;
+  --sl-color-red-high: #2a2a2a;
+
+  --q-sel: #cccccc;
+  --tq-code-bg: #f5f5f5;
+}
+
+/* Square corners everywhere, including Starlight's own components. */
+*,
+*::before,
+*::after {
+  border-radius: 0 !important;
+}
+
+/* Starlight's skip link is clipped until focused; keep its idle colour gray too. */
+.sl-skip-link:not(:focus) {
+  color: var(--sl-color-white);
+}
+
+/* Colour no longer marks links, so underline them in content. */
+.sl-markdown-content :is(p, li, blockquote, td, th) > a:not(.tq-button) {
+  text-decoration: underline;
+}
+
+/* ---------- Header + footer ---------- */
+.tq-header-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: var(--sl-text-sm);
+}
+.tq-header-nav a,
+.tq-nav-button {
+  color: var(--sl-color-white);
+  text-decoration: none;
+  font: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+.tq-header-nav a:hover,
+.tq-nav-button:hover {
+  color: var(--sl-color-text-accent);
+}
+
+/* ---------- Focus ---------- */
+:where(.tq-button, .tq-input, .tq-textarea, .tq-link-button, .tq-icon-button, .tq-row, .tq-tabs button, .tq-filter-tabs a, .tq-quote pre):focus-visible {
+  outline: 2px solid var(--sl-color-white);
+  outline-offset: 2px;
+}
+
+/* ---------- Buttons ---------- */
+.tq-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  padding: 0 1.25rem;
+  border: 1px solid transparent;
+  font: inherit;
+  font-size: var(--sl-text-sm);
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+}
+.tq-button--primary {
+  background: var(--sl-color-gray-6);
+  color: var(--sl-color-white);
+  border-color: var(--sl-color-gray-2);
+}
+.tq-button--primary:hover {
+  border-color: var(--sl-color-white);
+}
+.tq-button--secondary {
+  background: transparent;
+  color: var(--sl-color-white);
+  border-color: var(--q-border);
+}
+.tq-button--secondary:hover {
+  border-color: var(--sl-color-white);
+}
+.tq-button--small {
+  min-height: 2rem;
+  padding: 0 0.875rem;
+  font-size: var(--sl-text-xs);
+}
+.tq-button--large {
+  min-height: 2.75rem;
+}
+.tq-button--block {
+  width: 100%;
+}
+.tq-button[aria-disabled='true'],
+.tq-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.tq-link-button {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  font-size: var(--sl-text-sm);
+  color: var(--sl-color-text-accent);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.tq-icon-button {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  background: none;
+  border: 0;
+  color: var(--sl-color-gray-2);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+@media (max-width: 50rem) {
+  .tq-button,
+  .tq-button--small {
+    min-height: 2.75rem;
+  }
+}
+
+/* ---------- Badges, hints, errors, asides ---------- */
+.tq-badge {
+  display: inline-block;
+  padding: 0.125rem 0.375rem;
+  border: 1px solid;
+  font-family: var(--sl-font-mono);
+  font-size: var(--sl-text-xs);
+  line-height: 1.4;
+  white-space: nowrap;
+}
+/* Open */
+.tq-badge--accent {
+  color: var(--sl-color-gray-2);
+  background: transparent;
+  border-color: var(--sl-color-gray-2);
+}
+/* Resolved */
+.tq-badge--success {
+  color: var(--sl-color-gray-3);
+  background: transparent;
+  border-color: var(--sl-color-gray-3);
+}
+/* Next session */
+.tq-badge--caution {
+  color: var(--sl-color-white);
+  background: var(--sl-color-gray-6);
+  border-color: var(--sl-color-white);
+  font-weight: 600;
+}
+.tq-badge--neutral {
+  color: var(--sl-color-gray-2);
+  background: var(--sl-color-gray-6);
+  border-color: var(--sl-color-gray-5);
+}
+.tq-hint {
+  display: block;
+  margin: 0.25rem 0 0;
+  font-size: var(--sl-text-xs);
+  color: var(--sl-color-gray-3);
+}
+.tq-error {
+  margin: 0.25rem 0 0;
+  font-size: var(--sl-text-xs);
+  font-weight: 600;
+  color: var(--sl-color-white);
+}
+.tq-aside {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border-inline-start: 4px solid;
+  font-size: var(--sl-text-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+.tq-aside p {
+  margin: 0;
+}
+.tq-aside {
+  background: var(--sl-color-gray-6);
+}
+.tq-aside--note {
+  border-color: var(--sl-color-gray-4);
+}
+.tq-aside--caution {
+  border-color: var(--sl-color-gray-2);
+}
+.tq-aside--danger {
+  border-color: var(--sl-color-white);
+}
+.tq-aside--danger p:first-child {
+  font-weight: 600;
+}
+
+/* ---------- Form controls ---------- */
+.tq-input,
+.tq-textarea {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--q-border);
+  background: var(--sl-color-black);
+  color: var(--sl-color-white);
+  font: inherit;
+}
+.tq-input {
+  min-height: 2.75rem;
+}
+.tq-select {
+  width: auto;
+  max-width: 100%;
+}
+.tq-textarea {
+  min-height: 12rem;
+  resize: vertical;
+  font-family: var(--sl-font-mono);
+  font-size: var(--sl-text-sm);
+  line-height: 1.6;
+  tab-size: 4;
+}
+.tq-textarea--short {
+  min-height: 5rem;
+}
+[aria-invalid='true'] {
+  border-color: var(--sl-color-white);
+}
+
+/* ---------- Composer ---------- */
+.tq-composer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.tq-composer label,
+.tq-login label {
+  font-size: var(--sl-text-sm);
+  font-weight: 600;
+  color: var(--sl-color-white);
+}
+.tq-field__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 0;
+}
+.tq-tabs {
+  display: flex;
+}
+.tq-tabs button {
+  padding: 0.375rem 0.875rem;
+  border: 1px solid var(--q-border);
+  border-bottom: 0;
+  background: transparent;
+  color: var(--sl-color-gray-3);
+  font: inherit;
+  font-size: var(--sl-text-xs);
+  cursor: pointer;
+}
+.tq-tabs button:first-child {
+}
+.tq-tabs button:last-child {
+  border-inline-start: 0;
+}
+.tq-tabs button[aria-selected='true'] {
+  background: var(--sl-color-gray-6);
+  color: var(--sl-color-white);
+}
+.tq-preview {
+  min-height: 12rem;
+  padding: 0.75rem;
+  border: 1px solid var(--q-border);
+}
+.tq-counter {
+  text-align: end;
+}
+.tq-checkbox {
+  display: flex;
+  gap: 0.625rem;
+  align-items: flex-start;
+  font-weight: 600;
+  cursor: pointer;
+}
+.tq-checkbox input {
+  margin-top: 0.3rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--sl-color-accent);
+}
+.tq-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+.tq-source-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin: 0;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid var(--sl-color-gray-5);
+  background: var(--sl-color-gray-6);
+  font-size: var(--sl-text-sm);
+}
+.tq-source-card__label {
+  color: var(--sl-color-gray-3);
+}
+.tq-source-card__title {
+  flex: 1;
+  color: var(--sl-color-white);
+  font-weight: 600;
+}
+.tq-quote {
+  margin: 0.75rem 0 0;
+}
+.tq-quote figcaption {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.375rem;
+  font-size: var(--sl-text-xs);
+  color: var(--sl-color-gray-3);
+}
+.tq-quote pre {
+  margin: 0;
+  padding: 1rem;
+  overflow-x: auto;
+  white-space: pre;
+  tab-size: 4;
+  border: 1px solid var(--sl-color-gray-5);
+  background: var(--tq-code-bg);
+  color: var(--sl-color-white);
+  font-family: var(--sl-font-mono);
+  font-size: var(--sl-text-sm);
+}
+.tq-quote blockquote {
+  margin: 0;
+  padding: 0.25rem 0 0.25rem 1rem;
+  border-inline-start: 3px solid var(--sl-color-gray-4);
+  color: var(--sl-color-gray-2);
+  white-space: pre-wrap;
+}
+
+/* ---------- Note page entry points ---------- */
+.tq-rail {
+  padding: 1rem var(--sl-sidebar-pad-x);
+  border-top: 1px solid var(--sl-color-hairline);
+}
+/* Starlight's own .sl-container rule is component-scoped, so constrain the rail panel here. */
+.tq-rail .sl-container {
+  width: calc(var(--sl-sidebar-width) - 2 * var(--sl-sidebar-pad-x));
+  max-width: 100%;
+}
+.tq-ask-inline {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--sl-color-hairline);
+}
+@media (min-width: 72rem) {
+  .tq-ask-inline {
+    display: none;
+  }
+}
+.tq-floating {
+  position: absolute;
+  z-index: 50;
+}
+.tq-floating__note {
+  max-width: 18rem;
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  background: var(--sl-color-gray-6);
+  border: 1px solid var(--sl-color-gray-2);
+  font-size: var(--sl-text-xs);
+}
+.sl-markdown-content ::selection {
+  background: var(--q-sel);
+}
+
+/* ---------- Dialog ---------- */
+.tq-dialog {
+  width: min(42.5rem, calc(100vw - 2rem));
+  max-height: calc(100vh - 7rem);
+  margin: 5.5rem auto auto;
+  padding: 1.25rem 1.5rem 1.5rem;
+  border: 1px solid var(--sl-color-gray-5);
+  background: var(--sl-color-bg-nav);
+  color: var(--sl-color-text);
+}
+.tq-dialog::backdrop {
+  background: var(--sl-color-backdrop-overlay);
+}
+.tq-dialog__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.tq-dialog__head h2 {
+  margin: 0;
+  font-size: var(--sl-text-h4);
+}
+@media (max-width: 50rem) {
+  .tq-dialog {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    margin: 0;
+    border: 0;
+  }
+  .tq-dialog .tq-actions {
+    position: sticky;
+    bottom: 0;
+    padding: 0.75rem 0;
+    background: var(--sl-color-bg-nav);
+  }
+  .tq-dialog .tq-actions > :first-child {
+    flex: 1;
+  }
+  .tq-dialog .tq-actions > :last-child {
+    flex: 2;
+  }
+}
+
+/* ---------- Inbox ---------- */
+.tq-inbox__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.tq-inbox__head h1 {
+  margin: 0;
+}
+.tq-filter-tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-top: 1.5rem;
+  box-shadow: inset 0 -2px 0 var(--sl-color-gray-5);
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.tq-filter-tabs a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 0.875rem;
+  border-bottom: 2px solid transparent;
+  color: var(--sl-color-gray-3);
+  text-decoration: none;
+  white-space: nowrap;
+  font-size: var(--sl-text-sm);
+}
+.tq-filter-tabs a[aria-current='page'] {
+  color: var(--sl-color-white);
+  border-bottom-color: var(--sl-color-text-accent);
+  font-weight: 600;
+}
+.tq-inbox__controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+.tq-inbox__controls label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: var(--sl-text-xs);
+  color: var(--sl-color-gray-3);
+}
+.tq-rows {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  border-top: 1px solid var(--sl-color-hairline);
+}
+.tq-rows li {
+  margin: 0;
+  border-bottom: 1px solid var(--sl-color-hairline);
+}
+.tq-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas: 'title badges' 'meta badges';
+  gap: 0.25rem 1rem;
+  padding: 0.875rem 0.5rem;
+  color: inherit;
+  text-decoration: none;
+}
+.tq-row:hover {
+  background: var(--sl-color-gray-6);
+}
+.tq-row__title {
+  grid-area: title;
+  color: var(--sl-color-white);
+  font-weight: 600;
+}
+.tq-row__meta {
+  grid-area: meta;
+  font-size: var(--sl-text-xs);
+  color: var(--sl-color-gray-3);
+}
+.tq-row__badges {
+  grid-area: badges;
+  display: flex;
+  gap: 0.375rem;
+  align-items: center;
+}
+@media (max-width: 50rem) {
+  .tq-row {
+    grid-template-columns: 1fr;
+    grid-template-areas: 'title' 'meta' 'badges';
+  }
+  .tq-inbox__head .tq-button {
+    width: 100%;
+  }
+}
+.tq-empty {
+  padding: 2rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+.tq-empty__title {
+  margin: 0;
+  font-size: var(--sl-text-h4);
+  color: var(--sl-color-white);
+  font-weight: 600;
+}
+
+/* ---------- Thread ---------- */
+.tq-back {
+  font-size: var(--sl-text-sm);
+  text-decoration: none;
+}
+.tq-thread__head h1 {
+  margin: 0.75rem 0 0.5rem;
+}
+.tq-thread__badges {
+  display: flex;
+  gap: 0.375rem;
+}
+.tq-lifecycle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 1rem 0 1.5rem;
+}
+.tq-message {
+  margin: 0 0 1rem;
+  border: 1px solid var(--sl-color-gray-5);
+}
+.tq-message__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  background: var(--sl-color-gray-6);
+  border-bottom: 1px solid var(--sl-color-gray-5);
+  font-size: var(--sl-text-sm);
+}
+.tq-message__head time {
+  color: var(--sl-color-gray-3);
+  font-size: var(--sl-text-xs);
+}
+.tq-message__body {
+  padding: 0.75rem 1rem;
+}
+.tq-source {
+  margin-bottom: 1rem;
+}
+.tq-md {
+  overflow-wrap: anywhere;
+}
+.tq-md pre {
+  overflow-x: auto;
+  padding: 1rem;
+  border: 1px solid var(--sl-color-gray-5);
+  background: var(--tq-code-bg);
+  color: var(--sl-color-white);
+}
+.tq-md-image {
+  color: var(--sl-color-gray-3);
+  font-style: italic;
+}
+.tq-reply {
+  margin-top: 2rem;
+}
+.tq-toast {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  z-index: 60;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--sl-color-gray-5);
+  border-inline-start: 4px solid var(--sl-color-gray-2);
+  background: var(--sl-color-bg-nav);
+  font-size: var(--sl-text-sm);
+}
+
+/* ---------- Auth ---------- */
+.tq-auth {
+  max-width: 26rem;
+}
+.tq-login {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.tq-login .tq-button {
+  margin-top: 0.75rem;
+  align-self: flex-start;
+}
+
+/* Starlight's Markdown flow spacing (".sl-markdown-content * + *") must not leak into these flex
+   layouts, which space their children with `gap`. */
+.sl-markdown-content
+  :is(
+    .tq-lifecycle,
+    .tq-actions,
+    .tq-thread__badges,
+    .tq-row__badges,
+    .tq-row,
+    .tq-inbox__head,
+    .tq-inbox__controls,
+    .tq-source-card,
+    .tq-aside,
+    .tq-field__head,
+    .tq-tabs,
+    .tq-empty,
+    .tq-composer,
+    .tq-login,
+    .tq-checkbox,
+    .tq-message__head,
+    .tq-filter-tabs,
+    .tq-quote figcaption
+  )
+  > * {
+  margin-top: 0;
+}
+.tq-thread__title {
+  margin: 0.75rem 0 0.5rem;
+  font-size: var(--sl-text-h2);
+  line-height: var(--sl-line-height-headings);
+  color: var(--sl-color-white);
+}
+
+/* Visitors get no question panel; don't leave an empty bordered strip behind. */
+.tq-rail:not(:has(.tq-ask-panel)),
+.tq-ask-inline:not(:has(.tq-ask-panel)) {
+  display: none;
+}
+
+/* Secondary text that sits on a gray-6 surface steps up one shade to keep ≥ 4.5:1 contrast. */
+.tq-message__head time,
+.tq-source-card__label,
+.tq-aside .tq-hint,
+.tq-row:hover .tq-row__meta {
+  color: var(--sl-color-gray-2);
+}
+
+/* Inline code: same surface as code blocks, with a hairline frame. */
+.sl-markdown-content :not(pre) > code {
+  background: var(--tq-code-bg);
+  border: 1px solid var(--sl-color-gray-5);
+  color: var(--sl-color-white);
+}

@@ -1,0 +1,18 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import LoginForm from '../components/questions/LoginForm';
+---
+
+<StarlightPage
+  frontmatter={{
+    title: 'Sign in',
+    description: 'Sign in to CS3251 Tutoring.',
+    pagefind: false,
+    tableOfContents: false,
+    head: [{ tag: 'meta', attrs: { name: 'robots', content: 'noindex' } }],
+  }}
+>
+  <div class="tq-auth">
+    <LoginForm client:only="react" />
+  </div>
+</StarlightPage>

@@ -1,0 +1,27 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import NewQuestion from '../../components/questions/NewQuestion';
+import NoAccess from '../../components/questions/NoAccess.astro';
+import { getViewer } from '../../lib/server/viewer';
+
+export const prerender = false;
+
+let viewer;
+try {
+  viewer = await getViewer(Astro.locals.supabase);
+} catch {
+  viewer = undefined;
+}
+if (viewer === null) return Astro.redirect('/login?next=%2Fquestions%2Fnew', 303);
+if (viewer?.role === 'tutor') return Astro.redirect('/questions', 303);
+---
+
+<StarlightPage frontmatter={{ title: 'Ask a question', pagefind: false, tableOfContents: false }} hasSidebar={false}>
+  {
+    viewer?.role === 'student' ? (
+      <NewQuestion client:only="react" userId={viewer.userId} />
+    ) : (
+      <NoAccess unavailable={viewer === undefined} />
+    )
+  }
+</StarlightPage>

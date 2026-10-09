@@ -1,0 +1,10 @@
+---
+import Default from '@astrojs/starlight/components/SocialIcons.astro';
+import SessionNav from '../questions/SessionNav';
+---
+
+<nav class="tq-header-nav" aria-label="Account">
+  <a href="/questions">Questions</a>
+  <SessionNav client:idle />
+</nav>
+<Default />

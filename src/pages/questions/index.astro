@@ -1,0 +1,20 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import Inbox from '../../components/questions/Inbox';
+import NoAccess from '../../components/questions/NoAccess.astro';
+import { getViewer } from '../../lib/server/viewer';
+
+export const prerender = false;
+
+let viewer;
+try {
+  viewer = await getViewer(Astro.locals.supabase);
+} catch {
+  viewer = undefined; // database unavailable: render the outage state below
+}
+if (viewer === null) return Astro.redirect(`/login?next=${encodeURIComponent('/questions' + Astro.url.search)}`, 303);
+---
+
+<StarlightPage frontmatter={{ title: 'Questions', pagefind: false, tableOfContents: false }} hasSidebar={false}>
+  {viewer?.role ? <Inbox client:only="react" role={viewer.role} /> : <NoAccess unavailable={viewer === undefined} />}
+</StarlightPage>

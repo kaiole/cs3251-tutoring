@@ -1,0 +1,34 @@
+---
+import Default from '@astrojs/starlight/components/MarkdownContent.astro';
+import AskAboutNote from '../questions/AskAboutNote';
+
+// Only question-capable notes (under notes/ with a noteId) get the question entry points.
+// The props are public note metadata, identical for every visitor.
+const { entry } = Astro.locals.starlightRoute;
+const noteId = entry.id.startsWith('notes/') ? entry.data.noteId : undefined;
+const note = noteId
+  ? {
+      noteId,
+      title: entry.data.title,
+      path: `/${entry.id}/`,
+      revision: import.meta.env.BUILD_REVISION,
+    }
+  : undefined;
+---
+
+{
+  note ? (
+    <>
+      <div data-note-content>
+        <Default>
+          <slot />
+        </Default>
+      </div>
+      <AskAboutNote client:idle note={note} />
+    </>
+  ) : (
+    <Default>
+      <slot />
+    </Default>
+  )
+}

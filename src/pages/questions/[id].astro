@@ -1,0 +1,34 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import NoAccess from '../../components/questions/NoAccess.astro';
+import Thread from '../../components/questions/Thread';
+import { isUuid } from '../../lib/server/cursor';
+import { getViewer } from '../../lib/server/viewer';
+
+export const prerender = false;
+
+const id = Astro.params.id;
+let viewer;
+try {
+  viewer = await getViewer(Astro.locals.supabase);
+} catch {
+  viewer = undefined;
+}
+if (viewer === null) return Astro.redirect(`/login?next=${encodeURIComponent(Astro.url.pathname)}`, 303);
+// The page title never reveals a question's title or author: the island loads it after access checks.
+---
+
+<StarlightPage frontmatter={{ title: 'Question', pagefind: false, tableOfContents: false }} hasSidebar={false}>
+  {
+    viewer?.role && isUuid(id) ? (
+      <Thread client:only="react" questionId={id} userId={viewer.userId} />
+    ) : viewer?.role ? (
+      <div class="tq-empty">
+        <p>This question doesn't exist or you don't have access.</p>
+        <a class="tq-button tq-button--secondary" href="/questions">Back to Questions</a>
+      </div>
+    ) : (
+      <NoAccess unavailable={viewer === undefined} />
+    )
+  }
+</StarlightPage>

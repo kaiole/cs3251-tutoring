@@ -1,0 +1,23 @@
+---
+interface Props {
+  unavailable: boolean;
+}
+const { unavailable } = Astro.props;
+---
+
+{
+  unavailable ? (
+    <div class="tq-aside tq-aside--caution" role="alert">
+      <p>
+        <strong>Questions are temporarily unavailable.</strong>
+      </p>
+      <p>
+        Notes are still readable. <a href="/">Back to the notes</a>
+      </p>
+    </div>
+  ) : (
+    <div class="tq-aside tq-aside--note">
+      <p>Your account isn't connected to a tutoring relationship. Ask your tutor if you expected access.</p>
+    </div>
+  )
+}
