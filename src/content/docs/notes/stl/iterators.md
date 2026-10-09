@@ -6,11 +6,11 @@ noteId: cpp-iterators
 
 ## **Background**
 
-> [!NOTE] STL
->
-> The standard template library (STL) is a subset of the
-> **standard-library**[^1], and consists of the **iterator**, **container**,
-> **algorithm**, and **function object (functor)** parts of the library.
+:::note[STL]
+The standard template library (STL) is a subset of the
+**standard-library**[^1], and consists of the **iterator**, **container**,
+**algorithm**, and **function object (functor)** parts of the library.
+:::
 
 [^1]:
     **standard-library:** the collection of facilities specified by the C++
@@ -51,4 +51,4 @@ it provides. There are **five** categories:
 - compare via `operator==` & `operator!=`
 - access an element via `operator*`
 
-> [!DANGER] element access via
+:::note[element access via]
