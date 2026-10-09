@@ -1,8 +1,28 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { api, ApiError, newRequestId } from '../../lib/client/api';
 import { clearDraft, loadDraft, saveDraft } from '../../lib/client/drafts';
+import { loadVimPref, saveVimPref } from '../../lib/client/vim-pref';
 import { codePointLength, LIMITS, type QuestionSource } from '../../lib/validation';
+import type { CodeEditorHandle, CodeEditorProps } from './CodeEditor';
 import Markdown from './Markdown';
+
+/**
+ * The CodeMirror editor is its own chunk, fetched when a composer first renders (never for
+ * visitors, who get no composer). Until it arrives, or if it fails, the body is a plain textarea.
+ */
+type EditorComponent = typeof import('./CodeEditor').default;
+let loadedEditor: EditorComponent | null = null;
+let editorRequest: Promise<EditorComponent> | null = null;
+function loadEditor(): Promise<EditorComponent> {
+  editorRequest ??= import('./CodeEditor').then(
+    (m) => (loadedEditor = m.default),
+    (err: unknown) => {
+      editorRequest = null; // a later composer may retry
+      throw err;
+    },
+  );
+  return editorRequest;
+}
 
 export interface ComposerSource extends QuestionSource {
   /** Display-only label for the section (not stored). */
@@ -37,6 +57,11 @@ type Status =
 export default function Composer(props: Props) {
   const ids = useId();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const editorRef = useRef<CodeEditorHandle | null>(null);
+  const [Editor, setEditor] = useState<EditorComponent | null>(() => loadedEditor);
+  /** Focus/selection carried from the fallback textarea when the editor replaces it. */
+  const handoff = useRef<CodeEditorProps['initialFocus']>(null);
+  const [vim, setVim] = useState(loadVimPref);
   const initial = useMemo<DraftData>(() => {
     const stored = loadDraft<DraftData>(props.userId, props.draftScope);
     const fromProps = props.mode === 'question' ? props.initialSource : null;
@@ -58,7 +83,34 @@ export default function Composer(props: Props) {
   const [touched, setTouched] = useState(false);
 
   useEffect(() => {
-    if (props.autoFocus) textareaRef.current?.focus();
+    if (Editor) return;
+    let live = true;
+    loadEditor().then(
+      (component) => {
+        if (!live) return;
+        const textarea = textareaRef.current;
+        if (textarea && document.activeElement === textarea) {
+          const { selectionStart: start, selectionEnd: end, selectionDirection: dir } = textarea;
+          handoff.current = dir === 'backward' ? { anchor: end, head: start } : { anchor: start, head: end };
+        }
+        setEditor(() => component);
+      },
+      () => {
+        /* Chunk failed to load: the textarea stays. Nothing is logged. */
+      },
+    );
+    return () => {
+      live = false;
+    };
+  }, [Editor]);
+
+  function focusBody() {
+    if (editorRef.current) editorRef.current.focus();
+    else textareaRef.current?.focus();
+  }
+
+  useEffect(() => {
+    if (props.autoFocus) focusBody();
   }, [props.autoFocus]);
 
   // Persist on every change so a refresh or session expiry never loses the text.
@@ -93,7 +145,7 @@ export default function Composer(props: Props) {
     event.preventDefault();
     setTouched(true);
     if (blank || over > 0 || status.kind === 'saving' || (pasteOpen && pastedTooLong)) {
-      textareaRef.current?.focus();
+      focusBody();
       return;
     }
     const payload =
@@ -140,6 +192,7 @@ export default function Composer(props: Props) {
 
   const source = props.mode === 'question' ? draft.source : null;
   const label = props.mode === 'question' ? 'Your question' : 'Your reply';
+  const placeholder = props.mode === 'question' ? 'What are you confused about? Markdown and ```cpp code fences work.' : 'Write a reply…';
 
   return (
     <form className="tq-composer" onSubmit={submit} noValidate aria-busy={status.kind === 'saving'}>
@@ -203,29 +256,70 @@ export default function Composer(props: Props) {
 
       <div className="tq-field">
         <div className="tq-field__head">
-          <label htmlFor={`${ids}-body`}>{label}</label>
-          <div role="tablist" aria-label="Editor mode" className="tq-tabs">
-            <button type="button" role="tab" aria-selected={tab === 'write'} onClick={() => setTab('write')}>
-              Write
-            </button>
-            <button type="button" role="tab" aria-selected={tab === 'preview'} onClick={() => setTab('preview')}>
-              Preview
-            </button>
+          <label
+            id={`${ids}-label`}
+            // The code editor is not labelable (it uses aria-labelledby); a click focuses it instead.
+            htmlFor={Editor ? undefined : `${ids}-body`}
+            onClick={Editor ? () => editorRef.current?.focus() : undefined}
+          >
+            {label}
+          </label>
+          <div className="tq-field__tools">
+            {Editor && (
+              <label className="tq-vim-toggle">
+                <input
+                  type="checkbox"
+                  checked={vim}
+                  onChange={(e) => {
+                    setVim(e.target.checked);
+                    saveVimPref(e.target.checked);
+                  }}
+                />
+                Vim
+              </label>
+            )}
+            <div role="tablist" aria-label="Editor mode" className="tq-tabs">
+              <button type="button" role="tab" aria-selected={tab === 'write'} onClick={() => setTab('write')}>
+                Write
+              </button>
+              <button type="button" role="tab" aria-selected={tab === 'preview'} onClick={() => setTab('preview')}>
+                Preview
+              </button>
+            </div>
           </div>
         </div>
-        {tab === 'write' ? (
-          <textarea
-            ref={textareaRef}
-            id={`${ids}-body`}
-            className="tq-textarea"
+        {Editor ? (
+          // Kept mounted (hidden) during Preview so undo history and Vim state survive.
+          <Editor
             value={draft.body}
-            onChange={(e) => update({ body: e.target.value })}
-            aria-invalid={Boolean(bodyError)}
-            aria-describedby={`${ids}-body-hint`}
-            placeholder={props.mode === 'question' ? 'What are you confused about? Markdown and ```cpp code fences work.' : 'Write a reply…'}
-            spellCheck
+            onChange={(body) => update({ body })}
+            vim={vim}
+            onVimUnavailable={() => setVim(false)}
+            labelId={`${ids}-label`}
+            describedById={`${ids}-body-hint`}
+            invalid={Boolean(bodyError)}
+            placeholder={placeholder}
+            hidden={tab !== 'write'}
+            initialFocus={handoff.current}
+            handle={editorRef}
           />
         ) : (
+          tab === 'write' && (
+            <textarea
+              ref={textareaRef}
+              id={`${ids}-body`}
+              className="tq-textarea"
+              value={draft.body}
+              onChange={(e) => update({ body: e.target.value })}
+              aria-invalid={Boolean(bodyError)}
+              aria-describedby={`${ids}-body-hint`}
+              placeholder={placeholder}
+              spellCheck
+              data-composer-body
+            />
+          )
+        )}
+        {tab === 'preview' && (
           <div className="tq-preview" aria-live="polite">
             {draft.body.trim() ? <Markdown source={draft.body} /> : <p className="tq-hint">Nothing to preview yet.</p>}
           </div>

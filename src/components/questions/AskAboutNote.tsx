@@ -64,8 +64,9 @@ export default function AskAboutNote({ note }: { note: NoteInfo }) {
     if (!dialog) return;
     if (composerSource !== undefined && !dialog.open) {
       dialog.showModal();
-      // showModal() focuses the first control (Close); start in the question field instead.
-      dialog.querySelector<HTMLTextAreaElement>('textarea')?.focus();
+      // showModal() focuses the first control (Close); start in the question field instead
+      // (the code editor, or the plain textarea it replaces while loading).
+      dialog.querySelector<HTMLElement>('[data-composer-body]')?.focus();
     }
     if (composerSource === undefined && dialog.open) dialog.close();
   }, [composerSource]);
