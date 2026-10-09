@@ -2,7 +2,7 @@
  * Notification outbox worker — hosting-independent business logic.
  * netlify/functions/notify.mts is only a thin scheduled wrapper around runNotificationWorker().
  *
- * Guarantees (docs/architecture.md §7): bounded batches within the platform time limit, leased
+ * Guarantees: bounded batches within the platform time limit, leased
  * jobs, frozen generic payloads (no question content), a stable idempotency key per job, and no
  * exactly-once assumption. The database decides recipients; this code never chooses them.
  */

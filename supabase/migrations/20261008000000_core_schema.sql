@@ -1,6 +1,6 @@
 -- Core schema: tutoring pairs, questions, replies, notification outbox.
 --
--- Security model (see docs/architecture.md §5):
+-- Security model:
 --   * Clients (anon/authenticated) get NO table INSERT/UPDATE/DELETE privileges.
 --   * Reads: RLS SELECT policies limited to members of an ACTIVE tutoring pair, plus column grants.
 --   * Writes: only through the SECURITY DEFINER functions in 20261008000100_rpc.sql, which verify

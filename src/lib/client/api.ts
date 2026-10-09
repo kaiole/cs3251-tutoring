@@ -55,7 +55,7 @@ export function getManifest(): Promise<NoteManifest | null> {
   return manifestPromise;
 }
 
-/** Current, safe link for a saved source (P10): manifest only, never the stored path. */
+/** Current, safe link for a saved source: manifest only, never the stored path. */
 export function resolveSourceLink(
   manifest: NoteManifest | null,
   noteId: string,

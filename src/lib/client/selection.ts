@@ -1,6 +1,6 @@
 /**
  * Highlight → Ask: snapshot the current selection inside a note's article content as plain text.
- * Rules (docs/experience.md §4): text only, never HTML; code whitespace preserved exactly; a
+ * Rules: text only, never HTML; code whitespace preserved exactly; a
  * selection wholly inside one code block is a code excerpt with its language; nearest preceding
  * heading recorded; no silent truncation.
  */
