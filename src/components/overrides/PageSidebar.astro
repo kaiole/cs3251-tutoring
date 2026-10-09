@@ -16,3 +16,9 @@ const noteId = entry.id.startsWith('notes/') ? entry.data.noteId : undefined;
     </div>
   )
 }
+
+<script>
+  // Lets the last "On this page" headings become current near the end of a page.
+  import { installTocTail } from '../../lib/client/toc-tail';
+  installTocTail();
+</script>

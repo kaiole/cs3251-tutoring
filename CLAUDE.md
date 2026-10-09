@@ -10,7 +10,7 @@ Commands (Node ≥ 22.12, npm; Supabase CLI is a dev dependency):
 
 - `npm run db:start` / `db:reset` / `db:types` — local Supabase; reset re-applies `supabase/migrations`; regenerate `src/lib/database.types.ts` after schema changes.
 - `npm run dev` — Astro dev server on :4321 (CSP is not applied in dev; check it with `npm run build`).
-- `npm run clean` — clears Astro's content cache. Needed after changing Markdown/code-block rendering config (e.g. `src/styles/code-themes.mjs`): cached notes otherwise keep the old highlighting.
+- `npm run clean` — clears Astro's content cache. Needed after changing Markdown/code-block rendering config (e.g. `expressiveCode` in `astro.config.mjs`): cached notes otherwise keep the old highlighting.
 - `npm run check` (types + noteId check), `npm run build` (fails on CSP or noteId problems).
 - `npm test` (unit), `npm run test:db` (pgTAP), `npm run test:integration` (real local Data API), `npm run test:all`.
 - `npm run accounts -- invite|pair|revoke|list …` — tutor's admin CLI (secret key; local only).
@@ -21,7 +21,6 @@ Security invariants to preserve when changing code:
 - The browser never talks to Supabase; auth cookies are httpOnly. Only `netlify/functions/notify.mts` and `scripts/admin` use the secret key.
 - Never log bodies, excerpts, emails, tokens, or Postgres error details (they can echo rows) — log SQLSTATE/codes only.
 - Inline framework scripts must be hash-allowed via `csp-hashes.json` (`integrations/csp-check.mjs` fails the build otherwise).
-- `vendor/` (tree-sitter WASM grammars, nvim-treesitter queries) is third-party code pinned by sha256 in `vendor/README.md` and `tests/unit/vendor-integrity.test.ts`. Review before changing it. C/C++ highlighting parity with the tutor's Neovim is the golden test in `tests/unit/treesitter.test.ts`; regenerate the golden with `scripts/dev/nvim-captures.lua` (command in its header).
 
 The design docs remain the spec. Keep them consistent with each other and with the code.
 

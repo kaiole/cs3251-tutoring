@@ -5,8 +5,6 @@ import starlight from '@astrojs/starlight';
 import react from '@astrojs/react';
 import netlify from '@astrojs/netlify';
 import cspCheck, { readCspHashes } from './integrations/csp-check.mjs';
-import { lacklusterMonoDark, lacklusterMonoLight } from './src/styles/code-themes.mjs';
-import { treesitterHighlight } from './src/lib/highlight/ec-treesitter-plugin.mjs';
 
 /** Identifier of the deployed build, recorded with contextual questions for attribution. */
 function buildRevision() {
@@ -82,26 +80,23 @@ export default defineConfig({
       // One group per topic directory under src/content/docs/notes/.
       sidebar: [{ label: 'C++ fundamentals', items: [{ autogenerate: { directory: 'notes/cpp-fundamentals' } }] }],
       customCss: ['./src/styles/custom.css'],
-      // C/C++ is highlighted like the tutor's Neovim (tree-sitter + nvim-treesitter queries);
-      // other languages use the monochrome Shiki themes. Square, clearly framed blocks.
+      // Stock Shiki themes for readable code in both schemes; Expressive Code lifts any token
+      // below its default contrast floor on the code background. Square, clearly framed blocks.
       expressiveCode: {
-        themes: [lacklusterMonoDark, lacklusterMonoLight],
-        plugins: [treesitterHighlight()],
-        // The themes already meet WCAG AA (4.5:1); keep the exact palette grays.
-        minSyntaxHighlightingColorContrast: 4.5,
+        themes: ['github-dark', 'github-light'],
         // Replace Expressive Code's hued UI defaults (selection, focus, tooltip, markers) with
         // the site's gray variables, so they also follow the light/dark switch.
         styleOverrides: {
           borderRadius: '0',
           borderWidth: '1px',
-          borderColor: 'var(--sl-color-gray-5)',
+          borderColor: 'var(--tq-code-border)',
           codeBackground: 'var(--tq-code-bg)',
           codePaddingBlock: '1rem',
           codeSelectionBackground: 'var(--q-sel)',
           focusBorder: 'var(--sl-color-gray-2)',
           gutterForeground: 'var(--sl-color-gray-3)',
           gutterHighlightForeground: 'var(--sl-color-gray-1)',
-          gutterBorderColor: 'var(--sl-color-gray-5)',
+          gutterBorderColor: 'var(--tq-code-border)',
           uiSelectionBackground: 'var(--sl-color-gray-5)',
           uiSelectionForeground: 'var(--sl-color-white)',
           frames: {

@@ -1,7 +1,8 @@
 /*
  * Monochrome theme from the lackluster grays (copied from the tutor's lackluster-red palette,
- * minus every hue). Question UI is built on Starlight's tokens (--sl-*). States are conveyed by
- * text labels, weight and borders, never colour. No rounded corners anywhere.
+ * minus every hue). The dark page sits on #141414 rather than pure black, with the dim grays
+ * lifted to keep ≥ 4.5:1. Question UI is built on Starlight's tokens (--sl-*). States are
+ * conveyed by text labels, weight and borders, never colour. No rounded corners anywhere.
  */
 :root,
 ::backdrop {
@@ -9,47 +10,48 @@
   --sl-color-white: #dddddd;
   --sl-color-gray-1: #cccccc;
   --sl-color-gray-2: #aaaaaa;
-  --sl-color-gray-3: #7a7a7a;
+  --sl-color-gray-3: #858585;
   --sl-color-gray-4: #555555;
-  --sl-color-gray-5: #2a2a2a;
-  --sl-color-gray-6: #191919;
-  --sl-color-black: #000000;
+  --sl-color-gray-5: #333333;
+  --sl-color-gray-6: #202020;
+  --sl-color-black: #141414;
 
-  --sl-color-accent-low: #191919;
-  --sl-color-accent: #7a7a7a;
+  --sl-color-accent-low: #202020;
+  --sl-color-accent: #858585;
   --sl-color-accent-high: #dddddd;
   --sl-color-text-accent: #dddddd;
   --sl-color-text-invert: #000000;
   --sl-color-bg-accent: #dddddd;
-  --sl-color-bg-nav: #080808;
-  --sl-color-bg-sidebar: #080808;
-  --sl-color-bg-inline-code: #191919;
-  --sl-color-hairline: #2a2a2a;
-  --sl-color-hairline-light: #2a2a2a;
-  --sl-color-hairline-shade: #000000;
+  --sl-color-bg-nav: #181818;
+  --sl-color-bg-sidebar: #181818;
+  --sl-color-bg-inline-code: #202020;
+  --sl-color-hairline: #333333;
+  --sl-color-hairline-light: #333333;
+  --sl-color-hairline-shade: #0a0a0a;
   --sl-color-backdrop-overlay: rgb(0 0 0 / 0.7);
 
   /* Starlight's hued sets (asides, badges) collapse to grays. */
-  --sl-color-orange-low: #191919;
-  --sl-color-orange: #7a7a7a;
+  --sl-color-orange-low: #202020;
+  --sl-color-orange: #858585;
   --sl-color-orange-high: #cccccc;
-  --sl-color-green-low: #191919;
-  --sl-color-green: #7a7a7a;
+  --sl-color-green-low: #202020;
+  --sl-color-green: #858585;
   --sl-color-green-high: #cccccc;
-  --sl-color-blue-low: #191919;
-  --sl-color-blue: #7a7a7a;
+  --sl-color-blue-low: #202020;
+  --sl-color-blue: #858585;
   --sl-color-blue-high: #cccccc;
-  --sl-color-purple-low: #191919;
-  --sl-color-purple: #7a7a7a;
+  --sl-color-purple-low: #202020;
+  --sl-color-purple: #858585;
   --sl-color-purple-high: #cccccc;
-  --sl-color-red-low: #191919;
-  --sl-color-red: #7a7a7a;
+  --sl-color-red-low: #202020;
+  --sl-color-red: #858585;
   --sl-color-red-high: #cccccc;
 
   --q-border: var(--sl-color-gray-4);
   --q-sel: #444444;
-  /* Code surface: palette bg_alt, framed by a gray-5 border so blocks stand off the page. */
-  --tq-code-bg: #080808;
+  /* Code surface: a raised gray with a mid-gray frame so blocks stand clearly off the page. */
+  --tq-code-bg: #1c1c1c;
+  --tq-code-border: #555555;
 }
 :root[data-theme='light'],
 [data-theme='light'] ::backdrop {
@@ -95,7 +97,8 @@
   --sl-color-red-high: #2a2a2a;
 
   --q-sel: #cccccc;
-  --tq-code-bg: #f5f5f5;
+  --tq-code-bg: #f2f2f2;
+  --tq-code-border: #aaaaaa;
 }
 
 /* Square corners everywhere, including Starlight's own components. */
@@ -427,7 +430,7 @@
   overflow-x: auto;
   white-space: pre;
   tab-size: 4;
-  border: 1px solid var(--sl-color-gray-5);
+  border: 1px solid var(--tq-code-border);
   background: var(--tq-code-bg);
   color: var(--sl-color-white);
   font-family: var(--sl-font-mono);
@@ -682,7 +685,7 @@
 .tq-md pre {
   overflow-x: auto;
   padding: 1rem;
-  border: 1px solid var(--sl-color-gray-5);
+  border: 1px solid var(--tq-code-border);
   background: var(--tq-code-bg);
   color: var(--sl-color-white);
 }
@@ -769,6 +772,6 @@
 /* Inline code: same surface as code blocks, with a hairline frame. */
 .sl-markdown-content :not(pre) > code {
   background: var(--tq-code-bg);
-  border: 1px solid var(--sl-color-gray-5);
+  border: 1px solid var(--tq-code-border);
   color: var(--sl-color-white);
 }

@@ -111,7 +111,7 @@ For v1, original questions, quote snapshots, and posted replies are immutable th
 ## Accessibility and initial limits
 
 - UI copy is minimal: labels and error messages only, no explanatory or promotional text.
-- The UI is monochrome with square corners (lackluster grays), in dark and light themes. The one exception is string literals in code, which use the palette's muted red. C/C++ code is highlighted like the tutor's Neovim (tree-sitter), and code blocks sit on a framed surface. States are conveyed by text labels, weight and borders, never colour alone, and text keeps ≥ 4.5:1 contrast in both themes.
+- The UI is monochrome with square corners (lackluster grays), in dark and light themes. The one exception is syntax highlighting inside code blocks, which uses stock GitHub dark/light colours for readability; code blocks sit on a framed gray surface. States are conveyed by text labels, weight and borders, never colour alone, and text keeps ≥ 4.5:1 contrast in both themes.
 - Keyboard users can reach every action; the composer has labeled fields, visible focus, Escape-to-close where appropriate, and focus restoration to its trigger.
 - Highlighting is optional, never the only route to asking a contextual question. Validate selection behavior with mouse, keyboard, and mobile touch.
 - Retain Starlight's reading layout and responsive behavior. Reuse its visual tokens for custom UI instead of adding a second design system.
