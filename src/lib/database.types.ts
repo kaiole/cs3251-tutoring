@@ -7,14 +7,14 @@ export type Database = {
           Tables: {
             "questions": {
                   Row: {
-                    "author_id": string,"body_md": string,"created_at": string,"excerpt_kind": string | null,"excerpt_language": string | null,"excerpt_text": string | null,"id": string,"last_activity_at": string,"next_session": boolean,"pair_id": string,"request_hash": string,"request_id": string,"source_heading": string | null,"source_note_id": string | null,"source_path": string | null,"source_revision": string | null,"source_title": string | null,"status": string,"title": string,"version": number
+                    "author_id": string,"body_md": string,"created_at": string,"excerpt_kind": string | null,"excerpt_language": string | null,"excerpt_text": string | null,"id": string,"last_activity_at": string,"pair_id": string,"request_hash": string,"request_id": string,"source_heading": string | null,"source_note_id": string | null,"source_path": string | null,"source_revision": string | null,"source_title": string | null,"status": string,"title": string,"version": number
                   }
                   ComputedFields: never
                   Insert: {
-                    "author_id": string,"body_md": string,"created_at"?: string,"excerpt_kind"?: string | null,"excerpt_language"?: string | null,"excerpt_text"?: string | null,"id"?: string,"last_activity_at"?: string,"next_session"?: boolean,"pair_id": string,"request_hash": string,"request_id": string,"source_heading"?: string | null,"source_note_id"?: string | null,"source_path"?: string | null,"source_revision"?: string | null,"source_title"?: string | null,"status"?: string,"title": string,"version"?: number
+                    "author_id": string,"body_md": string,"created_at"?: string,"excerpt_kind"?: string | null,"excerpt_language"?: string | null,"excerpt_text"?: string | null,"id"?: string,"last_activity_at"?: string,"pair_id": string,"request_hash": string,"request_id": string,"source_heading"?: string | null,"source_note_id"?: string | null,"source_path"?: string | null,"source_revision"?: string | null,"source_title"?: string | null,"status"?: string,"title": string,"version"?: number
                   }
                   Update: {
-                    "author_id"?: string,"body_md"?: string,"created_at"?: string,"excerpt_kind"?: string | null,"excerpt_language"?: string | null,"excerpt_text"?: string | null,"id"?: string,"last_activity_at"?: string,"next_session"?: boolean,"pair_id"?: string,"request_hash"?: string,"request_id"?: string,"source_heading"?: string | null,"source_note_id"?: string | null,"source_path"?: string | null,"source_revision"?: string | null,"source_title"?: string | null,"status"?: string,"title"?: string,"version"?: number
+                    "author_id"?: string,"body_md"?: string,"created_at"?: string,"excerpt_kind"?: string | null,"excerpt_language"?: string | null,"excerpt_text"?: string | null,"id"?: string,"last_activity_at"?: string,"pair_id"?: string,"request_hash"?: string,"request_id"?: string,"source_heading"?: string | null,"source_note_id"?: string | null,"source_path"?: string | null,"source_revision"?: string | null,"source_title"?: string | null,"status"?: string,"title"?: string,"version"?: number
                   }
                   Relationships: [
                     {
@@ -69,7 +69,7 @@ isOneToOne: false
 { Args: { "p_body": string,"p_question_id": string,"p_request_id": string }; Returns: Json
                            },
 "create_question":
-{ Args: { "p_body": string,"p_next_session"?: boolean,"p_request_id": string,"p_source"?: Json }; Returns: {
+{ Args: { "p_body": string,"p_request_id": string,"p_source"?: Json }; Returns: {
               "author_id": string,
 "body_md": string,
 "created_at": string,
@@ -78,7 +78,6 @@ isOneToOne: false
 "excerpt_text": string | null,
 "id": string,
 "last_activity_at": string,
-"next_session": boolean,
 "pair_id": string,
 "request_hash": string,
 "request_id": string,
@@ -107,7 +106,6 @@ isOneToOne: false
 "excerpt_text": string | null,
 "id": string,
 "last_activity_at": string,
-"next_session": boolean,
 "pair_id": string,
 "request_hash": string,
 "request_id": string,

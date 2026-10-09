@@ -125,13 +125,8 @@ export default function Thread({ questionId, userId }: { questionId: string; use
       )}
 
       <header className="tq-thread__head">
+        <p className="tq-thread__status">{resolved ? 'Resolved' : 'Open'}</p>
         <h2 className="tq-thread__title">{question.title}</h2>
-        <div className="tq-thread__badges">
-          <span className={`tq-badge ${resolved ? 'tq-badge--success' : 'tq-badge--accent'}`}>
-            {resolved ? 'Resolved' : 'Open'}
-          </span>
-          {question.nextSession && <span className="tq-badge tq-badge--caution">Next session</span>}
-        </div>
         <p className="tq-hint">
           Asked by {roleLabel(question.authorRole, question.mine)} ·{' '}
           <time dateTime={question.createdAt}>{absoluteDate(question.createdAt)}</time>
@@ -140,28 +135,13 @@ export default function Thread({ questionId, userId }: { questionId: string; use
 
       <div className="tq-lifecycle" role="group" aria-label="Question status">
         {resolved ? (
-          <>
-            <button type="button" className="tq-button tq-button--secondary tq-button--small" disabled={busy} onClick={() => void act('reopen')}>
-              Reopen
-            </button>
-            <button type="button" className="tq-button tq-button--secondary tq-button--small" disabled={busy} onClick={() => void act('flag')}>
-              Flag for next session
-            </button>
-          </>
+          <button type="button" className="tq-button tq-button--secondary tq-button--small" disabled={busy} onClick={() => void act('reopen')}>
+            Reopen
+          </button>
         ) : (
-          <>
-            <button type="button" className="tq-button tq-button--secondary tq-button--small" disabled={busy} onClick={() => void act('resolve')}>
-              Resolve
-            </button>
-            <button
-              type="button"
-              className="tq-button tq-button--secondary tq-button--small"
-              disabled={busy}
-              onClick={() => void act(question.nextSession ? 'unflag' : 'flag')}
-            >
-              {question.nextSession ? 'Remove next-session flag' : 'Flag for next session'}
-            </button>
-          </>
+          <button type="button" className="tq-button tq-button--secondary tq-button--small" disabled={busy} onClick={() => void act('resolve')}>
+            Resolve
+          </button>
         )}
         {actionError && <p className="tq-error">{actionError}</p>}
       </div>

@@ -64,7 +64,6 @@ export type QuestionSource = z.infer<typeof sourceSchema>;
 export const createQuestionSchema = z.strictObject({
   requestId: z.uuid(),
   body: bodySchema,
-  nextSession: z.boolean(),
   source: sourceSchema.nullable(),
 });
 export type CreateQuestionInput = z.infer<typeof createQuestionSchema>;
@@ -74,7 +73,7 @@ export const createReplySchema = z.strictObject({
   body: bodySchema,
 });
 
-export const LIFECYCLE_ACTIONS = ['resolve', 'reopen', 'flag', 'unflag'] as const;
+export const LIFECYCLE_ACTIONS = ['resolve', 'reopen'] as const;
 export type LifecycleAction = (typeof LIFECYCLE_ACTIONS)[number];
 
 export const updateStateSchema = z.strictObject({
@@ -82,7 +81,7 @@ export const updateStateSchema = z.strictObject({
   action: z.enum(LIFECYCLE_ACTIONS),
 });
 
-export const INBOX_FILTERS = ['open', 'next', 'resolved', 'all'] as const;
+export const INBOX_FILTERS = ['open', 'resolved', 'all'] as const;
 export type InboxFilter = (typeof INBOX_FILTERS)[number];
 
 export const loginSchema = z.strictObject({

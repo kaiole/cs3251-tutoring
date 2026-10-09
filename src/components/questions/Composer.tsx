@@ -11,7 +11,6 @@ export interface ComposerSource extends QuestionSource {
 
 interface DraftData {
   body: string;
-  nextSession: boolean;
   source: ComposerSource | null;
   /** Submission key and the exact payload it was first used with (idempotent retry). */
   requestId: string | null;
@@ -43,7 +42,6 @@ export default function Composer(props: Props) {
     const fromProps = props.mode === 'question' ? props.initialSource : null;
     return {
       body: stored?.body ?? '',
-      nextSession: stored?.nextSession ?? false,
       // A fresh selection wins over a stored one; otherwise keep what the draft had.
       source: fromProps?.excerpt ? fromProps : (stored?.source ?? fromProps),
       requestId: stored?.requestId ?? null,
@@ -65,7 +63,7 @@ export default function Composer(props: Props) {
 
   // Persist on every change so a refresh or session expiry never loses the text.
   useEffect(() => {
-    if (draft.body || draft.source?.excerpt || draft.nextSession) saveDraft(props.userId, props.draftScope, draft);
+    if (draft.body || draft.source?.excerpt) saveDraft(props.userId, props.draftScope, draft);
   }, [draft, props.userId, props.draftScope]);
 
   const length = codePointLength(draft.body);
@@ -100,7 +98,7 @@ export default function Composer(props: Props) {
     }
     const payload =
       props.mode === 'question'
-        ? { body: draft.body, nextSession: draft.nextSession, source: effectiveSource() }
+        ? { body: draft.body, source: effectiveSource() }
         : { body: draft.body };
     const payloadKey = JSON.stringify(payload);
     // Same payload → same key (server returns the original); changed payload → new key.
@@ -114,7 +112,7 @@ export default function Composer(props: Props) {
       const url = props.mode === 'question' ? '/api/questions' : `/api/questions/${props.questionId}/replies`;
       const result = await api<{ id: string }>(url, { method: 'POST', body: { requestId, ...payload } });
       clearDraft(props.userId, props.draftScope);
-      setDraft({ body: '', nextSession: false, source: null, requestId: null, attempted: null });
+      setDraft({ body: '', source: null, requestId: null, attempted: null });
       setStatus({ kind: 'idle' });
       setTouched(false);
       props.onSaved(result.id);
@@ -237,12 +235,6 @@ export default function Composer(props: Props) {
         </p>
       </div>
 
-      {props.mode === 'question' && (
-        <label className="tq-checkbox">
-          <input type="checkbox" checked={draft.nextSession} onChange={(e) => update({ nextSession: e.target.checked })} />
-          <span>Cover next session</span>
-        </label>
-      )}
       {props.mode === 'reply' && props.reopensOnReply && <p className="tq-hint">Replying will reopen this question.</p>}
 
       {status.kind === 'error' && (

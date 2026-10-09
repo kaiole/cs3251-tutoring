@@ -15,7 +15,7 @@ insert into public.tutoring_pairs (id, tutor_id, student_id) values
 select set_config('request.jwt.claims', '{"sub":"22222222-2222-2222-2222-222222222222","role":"authenticated"}', true);
 set local role authenticated;
 select public.create_question('c0000000-0000-0000-0000-000000000001',
-  E'Secret question text\n```cpp\nint secret = 42;\n```', false,
+  E'Secret question text\n```cpp\nint secret = 42;\n```',
   '{"noteId":"cpp-refs","title":"Refs","path":"/notes/refs/","excerpt":{"text":"quoted passage","kind":"text"}}');
 reset role;
 

@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { codePointLength, createQuestionSchema, LIMITS, sourceSchema } from '../../src/lib/validation';
+import {
+  codePointLength,
+  createQuestionSchema,
+  INBOX_FILTERS,
+  LIMITS,
+  sourceSchema,
+  updateStateSchema,
+} from '../../src/lib/validation';
 
-const base = { requestId: '7d9f1c2e-4b6a-4c1d-9e8f-0a1b2c3d4e5f', nextSession: false, source: null };
+const base = { requestId: '7d9f1c2e-4b6a-4c1d-9e8f-0a1b2c3d4e5f', source: null };
 
 describe('question validation', () => {
   it('accepts a general question with one body field', () => {
@@ -22,6 +29,10 @@ describe('question validation', () => {
   it('rejects unknown fields (no author/pair/recipient injection)', () => {
     expect(createQuestionSchema.safeParse({ ...base, body: 'x', authorId: 'someone' }).success).toBe(false);
     expect(createQuestionSchema.safeParse({ ...base, body: 'x', recipient: 'a@b.c' }).success).toBe(false);
+  });
+
+  it('rejects the removed nextSession field', () => {
+    expect(createQuestionSchema.safeParse({ ...base, body: 'x', nextSession: true }).success).toBe(false);
   });
 
   it('preserves excerpt whitespace exactly', () => {
@@ -46,5 +57,20 @@ describe('question validation', () => {
   ])('rejects %s', (_label, override) => {
     const source = { noteId: 'n1', title: 'T', path: '/notes/a/', ...override };
     expect(sourceSchema.safeParse(source).success).toBe(false);
+  });
+});
+
+describe('lifecycle and inbox validation', () => {
+  it('accepts resolve and reopen', () => {
+    expect(updateStateSchema.safeParse({ expectedVersion: 1, action: 'resolve' }).success).toBe(true);
+    expect(updateStateSchema.safeParse({ expectedVersion: 1, action: 'reopen' }).success).toBe(true);
+  });
+
+  it.each(['flag', 'unflag'])('rejects the removed %s action', (action) => {
+    expect(updateStateSchema.safeParse({ expectedVersion: 1, action }).success).toBe(false);
+  });
+
+  it('rejects the removed next inbox filter', () => {
+    expect((INBOX_FILTERS as readonly string[]).includes('next')).toBe(false);
   });
 });

@@ -23,7 +23,6 @@ export interface InboxItem {
   id: string;
   title: string;
   status: 'open' | 'resolved';
-  nextSession: boolean;
   source: { noteId: string; title: string } | null;
   lastActivityAt: string;
   createdAt: string;
@@ -48,7 +47,6 @@ export interface ThreadView {
     title: string;
     body: string;
     status: 'open' | 'resolved';
-    nextSession: boolean;
     version: number;
     createdAt: string;
     lastActivityAt: string;

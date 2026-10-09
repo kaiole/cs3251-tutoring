@@ -29,7 +29,7 @@ export const GET: APIRoute = async ({ locals, params, url }) => {
   }
 };
 
-/** Version-checked status / next-session change only. */
+/** Version-checked status change only. */
 export const PATCH: APIRoute = async ({ locals, params, request }) => {
   try {
     const viewer = await getViewer(locals.supabase);

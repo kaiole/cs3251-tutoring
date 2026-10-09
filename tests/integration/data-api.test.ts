@@ -59,7 +59,7 @@ describe.skipIf(!configured)('direct Data API access', () => {
 
   it('student creates a question; identical retry is idempotent', async () => {
     const requestId = randomUUID();
-    const args = { p_request_id: requestId, p_body: 'Why can a reference not be reseated?', p_next_session: true };
+    const args = { p_request_id: requestId, p_body: 'Why can a reference not be reseated?' };
     const first = await clients.student.rpc('create_question', args).single<{ id: string }>();
     expect(first.error).toBeNull();
     questionId = first.data!.id;
@@ -68,6 +68,20 @@ describe.skipIf(!configured)('direct Data API access', () => {
     const changed = await clients.student.rpc('create_question', { ...args, p_body: 'changed' });
     expect(changed.error?.code).toBe('PT409');
     expect(changed.status).toBe(409);
+  });
+
+  it('the removed p_next_session argument matches no function and creates nothing', async () => {
+    const before = await clients.student.from('questions').select('id');
+    expect(before.error).toBeNull();
+    const rpc = await clients.student.rpc('create_question', {
+      p_request_id: randomUUID(),
+      p_body: 'Flag me for next session',
+      p_next_session: true,
+    } as never);
+    expect(rpc.error).not.toBeNull();
+    expect(rpc.error?.code).toBe('PGRST202');
+    const after = await clients.student.from('questions').select('id');
+    expect(after.data).toHaveLength(before.data!.length);
   });
 
   it('anonymous requests read and write nothing', async () => {

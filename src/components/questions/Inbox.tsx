@@ -7,7 +7,6 @@ import { relativeTime } from './time';
 
 const FILTER_LABELS: Record<InboxFilter, string> = {
   open: 'Open',
-  next: 'Next session',
   resolved: 'Resolved',
   all: 'All',
 };
@@ -90,17 +89,16 @@ export default function Inbox({ role }: { role: Role }) {
         )}
       </div>
 
-      <nav aria-label="Filter questions" className="tq-filter-tabs">
-        {INBOX_FILTERS.map((f) => (
-          <a key={f} href={hrefFor(f, note)} aria-current={f === filter ? 'page' : undefined}>
-            {FILTER_LABELS[f]}
-          </a>
-        ))}
-      </nav>
-
-      <div className="tq-inbox__controls">
+      <div className="tq-inbox__bar">
+        <nav aria-label="Filter questions" className="tq-filter-tabs">
+          {INBOX_FILTERS.map((f) => (
+            <a key={f} href={hrefFor(f, note)} aria-current={f === filter ? 'page' : undefined}>
+              {FILTER_LABELS[f]}
+            </a>
+          ))}
+        </nav>
         <label>
-          <span>Source note</span>
+          <span className="sr-only">Source note</span>
           <select
             className="tq-input tq-select"
             value={note ?? ''}
@@ -139,18 +137,19 @@ export default function Inbox({ role }: { role: Role }) {
             {load.items.map((item) => (
               <li key={item.id}>
                 <a href={`/questions/${item.id}`} className="tq-row">
-                  <span className="tq-row__title">{item.title}</span>
-                  <span className="tq-row__meta">
-                    <SourceLabel item={item} manifest={manifest} /> ·{' '}
-                    <time dateTime={item.lastActivityAt} title={new Date(item.lastActivityAt).toLocaleString()}>
-                      active {relativeTime(item.lastActivityAt)}
-                    </time>
-                  </span>
-                  <span className="tq-row__badges">
-                    {item.nextSession && <span className="tq-badge tq-badge--caution">Next session</span>}
-                    <span className={`tq-badge ${item.status === 'open' ? 'tq-badge--accent' : 'tq-badge--success'}`}>
-                      {item.status === 'open' ? 'Open' : 'Resolved'}
+                  <span className="tq-row__main">
+                    <span className="tq-row__title">{item.title}</span>
+                    <span className="tq-row__source">
+                      <SourceLabel item={item} manifest={manifest} />
                     </span>
+                  </span>
+                  <span className="tq-row__aside">
+                    {filter === 'all' && (
+                      <span className="tq-row__status">{item.status === 'open' ? 'Open' : 'Resolved'}</span>
+                    )}
+                    <time dateTime={item.lastActivityAt} title={new Date(item.lastActivityAt).toLocaleString()}>
+                      {relativeTime(item.lastActivityAt)}
+                    </time>
                   </span>
                 </a>
               </li>
@@ -181,13 +180,7 @@ function SourceLabel({ item, manifest }: { item: InboxItem; manifest: NoteManife
 
 function EmptyState({ role, filter }: { role: Role; filter: InboxFilter }) {
   const heading =
-    filter === 'next'
-      ? 'Nothing flagged for next session'
-      : filter === 'resolved'
-        ? 'No resolved questions yet'
-        : filter === 'all'
-          ? 'No questions yet'
-          : 'No open questions';
+    filter === 'resolved' ? 'No resolved questions yet' : filter === 'all' ? 'No questions yet' : 'No open questions';
   return (
     <div className="tq-empty">
       <p className="tq-empty__title">{heading}</p>

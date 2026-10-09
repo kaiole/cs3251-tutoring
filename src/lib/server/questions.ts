@@ -12,9 +12,9 @@ export const INBOX_PAGE_SIZE = 25;
 export const REPLY_PAGE_SIZE = 100;
 
 const INBOX_COLUMNS =
-  'id, title, status, next_session, source_note_id, source_title, last_activity_at, created_at' as const;
+  'id, title, status, source_note_id, source_title, last_activity_at, created_at' as const;
 const THREAD_COLUMNS =
-  'id, pair_id, author_id, title, body_md, status, next_session, version, created_at, last_activity_at, ' +
+  'id, pair_id, author_id, title, body_md, status, version, created_at, last_activity_at, ' +
   'source_note_id, source_title, source_heading, source_revision, excerpt_text, excerpt_kind, excerpt_language';
 
 type DbError = { code?: string };
@@ -22,7 +22,7 @@ export type Result<T> = { ok: true; value: T } | { ok: false; error: DbError };
 
 type InboxRow = Pick<
   Tables<'questions'>,
-  'id' | 'title' | 'status' | 'next_session' | 'source_note_id' | 'source_title' | 'last_activity_at' | 'created_at'
+  'id' | 'title' | 'status' | 'source_note_id' | 'source_title' | 'last_activity_at' | 'created_at'
 >;
 
 function toInboxItem(row: InboxRow): InboxItem {
@@ -30,7 +30,6 @@ function toInboxItem(row: InboxRow): InboxItem {
     id: row.id,
     title: row.title,
     status: row.status as InboxItem['status'],
-    nextSession: row.next_session,
     source: row.source_note_id ? { noteId: row.source_note_id, title: row.source_title ?? '' } : null,
     lastActivityAt: row.last_activity_at,
     createdAt: row.created_at,
@@ -41,37 +40,29 @@ export async function listQuestions(
   supabase: Supabase,
   opts: { filter: InboxFilter; noteId?: string | undefined; cursor?: string | null | undefined },
 ): Promise<Result<InboxPage>> {
-  // "Next session": open + flagged, oldest first so earlier questions are not forgotten.
-  const oldestFirst = opts.filter === 'next';
-  const sortColumn = oldestFirst ? 'created_at' : 'last_activity_at';
-
   let query = supabase.from('questions').select(INBOX_COLUMNS);
   if (opts.filter === 'open') query = query.eq('status', 'open');
   if (opts.filter === 'resolved') query = query.eq('status', 'resolved');
-  if (opts.filter === 'next') query = query.eq('status', 'open').eq('next_session', true);
   if (opts.noteId) query = query.eq('source_note_id', opts.noteId);
 
   const cursor = decodeCursor(opts.cursor);
   if (cursor) {
     // Safe to interpolate: decodeCursor only admits a strict timestamp and a UUID.
-    const op = oldestFirst ? 'gt' : 'lt';
     query = query.or(
-      `${sortColumn}.${op}."${cursor.t}",and(${sortColumn}.eq."${cursor.t}",id.${op}.${cursor.id})`,
+      `last_activity_at.lt."${cursor.t}",and(last_activity_at.eq."${cursor.t}",id.lt.${cursor.id})`,
     );
   }
 
   const { data, error } = await query
-    .order(sortColumn, { ascending: oldestFirst })
-    .order('id', { ascending: oldestFirst })
+    .order('last_activity_at', { ascending: false })
+    .order('id', { ascending: false })
     .limit(INBOX_PAGE_SIZE + 1);
   if (error) return { ok: false, error };
 
   const rows = data.slice(0, INBOX_PAGE_SIZE);
   const last = rows.at(-1);
   const nextCursor =
-    data.length > INBOX_PAGE_SIZE && last
-      ? encodeCursor({ t: oldestFirst ? last.created_at : last.last_activity_at, id: last.id })
-      : null;
+    data.length > INBOX_PAGE_SIZE && last ? encodeCursor({ t: last.last_activity_at, id: last.id }) : null;
   return { ok: true, value: { items: rows.map(toInboxItem), nextCursor } };
 }
 
@@ -134,7 +125,6 @@ export async function getThread(
         title: q.title,
         body: q.body_md,
         status: q.status as 'open' | 'resolved',
-        nextSession: q.next_session,
         version: q.version,
         createdAt: q.created_at,
         lastActivityAt: q.last_activity_at,
@@ -173,7 +163,6 @@ export async function createQuestion(
   const { data, error } = await supabase.rpc('create_question', {
       p_request_id: input.requestId,
       p_body: input.body,
-      p_next_session: input.nextSession,
       // Passed through exactly as validated so identical retries hash identically.
       ...(input.source ? { p_source: input.source } : {}),
     });
@@ -201,12 +190,12 @@ export async function setQuestionState(
   questionId: string,
   expectedVersion: number,
   action: LifecycleAction,
-): Promise<Result<{ status: string; nextSession: boolean; version: number }>> {
+): Promise<Result<{ status: string; version: number }>> {
   const { data, error } = await supabase.rpc('set_question_state', {
       p_question_id: questionId,
       p_expected_version: expectedVersion,
       p_action: action,
     });
   if (error) return { ok: false, error };
-  return { ok: true, value: { status: data.status, nextSession: data.next_session, version: data.version } };
+  return { ok: true, value: { status: data.status, version: data.version } };
 }
