@@ -78,7 +78,10 @@ export default defineConfig({
       title: 'CS3251 Tutoring',
       description: 'C++ notes for CS3251 tutoring.',
       // One group per topic directory under src/content/docs/notes/.
-      sidebar: [{ label: 'C++ fundamentals', items: [{ autogenerate: { directory: 'notes/cpp-fundamentals' } }] }],
+      sidebar: [
+        { label: 'C++ fundamentals', items: [{ autogenerate: { directory: 'notes/cpp-fundamentals' } }] },
+        { label: 'STL', items: [{ autogenerate: { directory: 'notes/stl' } }] },
+      ],
       customCss: ['./src/styles/custom.css'],
       // Stock Shiki themes for readable code in both schemes; Expressive Code lifts any token
       // below its default contrast floor on the code background. Square, clearly framed blocks.
