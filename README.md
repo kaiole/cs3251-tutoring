@@ -29,4 +29,4 @@ npm run test:all    # unit, database policy, and API tests
 
 ## Writing notes
 
-Add Markdown files under `src/content/docs/notes/<topic>/`. Each note needs a unique, permanent `noteId` in its frontmatter. A new topic also needs a sidebar entry in `astro.config.mjs`.
+Add Markdown files under `src/content/docs/notes/<topic>/`. Each note needs a unique, permanent `noteId` in its frontmatter. Each folder automatically becomes a sidebar section and a home-page section, labelled with the folder's name.

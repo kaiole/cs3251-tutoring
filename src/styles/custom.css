@@ -138,6 +138,44 @@
   text-decoration: underline;
 }
 
+/* Footnotes: bracketed reference marks, and a ruled-off, smaller, dimmer list at the end so it
+   doesn't read as a continuation of the note's last list. */
+.sl-markdown-content sup > a[data-footnote-ref] {
+  text-decoration: none;
+  font-size: var(--sl-text-xs);
+}
+.sl-markdown-content sup > a[data-footnote-ref]::before {
+  content: '[';
+}
+.sl-markdown-content sup > a[data-footnote-ref]::after {
+  content: ']';
+}
+.sl-markdown-content section.footnotes {
+  margin-top: 3rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--sl-color-hairline);
+  font-size: var(--sl-text-sm);
+  color: var(--sl-color-gray-3);
+}
+.sl-markdown-content section.footnotes strong {
+  color: var(--sl-color-gray-2);
+}
+/* The generated back-link text "↩" has an emoji form that some systems draw in colour. Hide it and
+   draw "↵", which has no emoji form. The link keeps its aria-label ("Back to reference 1"). */
+.sl-markdown-content .data-footnote-backref {
+  margin-inline-start: 0.25rem;
+  color: var(--sl-color-gray-3);
+  text-decoration: none;
+  font-size: 0;
+}
+.sl-markdown-content .data-footnote-backref::after {
+  content: '↵';
+  font-size: var(--sl-text-sm);
+}
+.sl-markdown-content .data-footnote-backref:hover {
+  color: var(--sl-color-white);
+}
+
 /* ---------- Header + footer ---------- */
 .tq-header-nav {
   display: flex;
